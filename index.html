@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="description" content="One distraction-free place for your reinforcement learning survey research, courses, papers, reading, and progress." />
+  <title>RL Survey Lab — Research Command Center</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div id="app" class="shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#home" data-nav="home">
+        <span class="brand-symbol">∑</span>
+        <span><strong>RL SURVEY LAB</strong><small>RESEARCH WORKSPACE</small></span>
+      </a>
+      <div class="side-label">WORKSPACE</div>
+      <nav class="nav">
+        <button class="nav-link active" data-nav="home"><span class="nav-icon">⌂</span> Overview</button>
+        <button class="nav-link" data-nav="courses"><span class="nav-icon">▤</span> Learning courses</button>
+        <button class="nav-link" data-nav="roadmap"><span class="nav-icon">◈</span> Research roadmap</button>
+        <button class="nav-link" data-nav="papers"><span class="nav-icon">▣</span> Paper library</button>
+        <button class="nav-link" data-nav="documents"><span class="nav-icon">▧</span> Documents & PDFs</button>
+        <button class="nav-link" data-nav="feed"><span class="nav-icon">⌁</span> RL research feed</button>
+      </nav>
+      <div class="side-label with-gap">YOUR TOOLS</div>
+      <nav class="nav">
+        <button class="nav-link" data-nav="timer"><span class="nav-icon">◷</span> Focus & streaks</button>
+        <button class="nav-link" data-nav="journal"><span class="nav-icon">✎</span> Research journal</button>
+        <button class="nav-link" data-nav="settings"><span class="nav-icon">⚙</span> Backup & settings</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-tip"><span class="tip-star">✦</span><strong>Your north star</strong><p>Build an argument, not a pile of summaries.</p></div>
+        <div class="offline-note"><span class="status-dot"></span> Private, browser-based workspace</div>
+      </div>
+    </aside>
+    <div class="content-shell">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-symbol">∑</span><strong>RL SURVEY LAB</strong></div>
+        <div class="crumb"><span>WORKSPACE</span><span class="crumb-chevron">/</span><strong id="crumb-name">Overview</strong></div>
+        <div class="top-actions">
+          <span class="today-chip" id="today-chip"></span>
+          <button class="btn btn-ghost btn-small" id="quick-add" title="Add a paper">＋ Add paper</button>
+          <button class="avatar" id="account-btn" aria-label="Backup and settings">RL</button>
+        </div>
+      </header>
+      <main class="main" id="main" tabindex="-1"></main>
+      <footer class="footer">RL SURVEY LAB <span>•</span> Research over busywork <span>•</span> Your data stays in this browser unless you export it</footer>
+    </div>
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <button data-nav="home">⌂<span>Home</span></button>
+      <button data-nav="courses">▤<span>Learn</span></button>
+      <button data-nav="papers">▣<span>Papers</span></button>
+      <button data-nav="roadmap">◈<span>Stages</span></button>
+      <button data-nav="settings">⚙<span>More</span></button>
+    </nav>
+  </div>
+  <div id="modal-root"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <input type="file" id="doc-upload" accept=".pdf,.md,.txt,.doc,.docx,.csv,.json,.png,.jpg,.jpeg" multiple hidden />
+  <input type="file" id="paper-upload" accept=".pdf" hidden />
+  <input type="file" id="import-file" accept=".json" hidden />
+</body>
+</html>
