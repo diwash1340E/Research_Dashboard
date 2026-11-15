@@ -175,3 +175,9 @@ input[type=checkbox]{accent-color:#EB5E28}
 .footer{border-color:var(--line);color:#CCC5B9}
 .footer span{color:#CCC5B9}
 @media(max-width:740px){.mobile-nav{background:#252422;border-color:var(--line)}}
+
+/* RL Survey Lab supplied horizontal logo. The PNG background matches #252422. */
+.brand{padding:0 0 30px;display:flex;align-items:center;justify-content:flex-start}
+.brand-logo{display:block;width:189px;max-width:100%;height:auto;object-fit:contain;flex-shrink:1}
+.mobile-brand .brand-logo-mobile{width:150px;height:auto;max-width:100%}
+@media(max-width:740px){.mobile-brand{display:flex;align-items:center}.brand-logo-mobile{max-height:52px}}
