@@ -1,7 +1,11 @@
+-- Apply ONCE in a newly created Supabase project; stop if any query fails.
+-- The transaction rolls back all statements if an error occurs.
 -- RL Survey Lab — PI collaboration MVP (NOT applied until a Supabase project is configured)
 -- Apply only to a dedicated, trusted Supabase project, using a privileged migration account.
 -- User membership is provisioned by trusted admin SQL after Auth invitations.
 -- ALL data remains inaccessible until tables, grants, RLS and test identities are configured.
+
+begin;
 
 create extension if not exists pgcrypto;
 
@@ -171,7 +175,7 @@ returns integer
 language plpgsql
 security definer
 set search_path = ''
-as $
+as $$
 declare changed_count integer;
 begin
  if (select auth.uid()) is null then
@@ -187,7 +191,7 @@ begin
  get diagnostics changed_count = row_count;
  return changed_count;
 end;
-$;
+$$;
 revoke all on function public.revoke_project_snapshots(uuid) from public,anon;
 grant execute on function public.revoke_project_snapshots(uuid) to authenticated;
 
@@ -199,3 +203,5 @@ grant execute on function public.revoke_project_snapshots(uuid) to authenticated
 -- Do not create arbitrary membership by email submitted from the public browser.
 -- IMPORTANT: Run grant/RLS tests with owner, advisor, unrelated signed-in user and anon
 -- BEFORE deploying the authenticated pages.
+
+commit;
