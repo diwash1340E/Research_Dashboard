@@ -7,13 +7,6 @@
   <meta name="description" content="One distraction-free place for your reinforcement learning survey research, courses, papers, reading, and progress." />
   <title>RL Survey Lab — Research Command Center</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-  <script>
-    // Apply the saved visual preference before first paint; research data is separate.
-    try {
-      document.documentElement.dataset.theme =
-        localStorage.getItem('rl_survey_lab_theme_v1') === 'light' ? 'light' : 'dark';
-    } catch (_) { document.documentElement.dataset.theme = 'dark'; }
-  </script>
   <link rel="stylesheet" href="styles.css" />
   <script src="app.js" defer></script>
 </head>
@@ -50,9 +43,7 @@
         <div class="crumb"><span>WORKSPACE</span><span class="crumb-chevron">/</span><strong id="crumb-name">Overview</strong></div>
         <div class="top-actions">
           <span class="today-chip" id="today-chip"></span>
-          <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode" aria-pressed="true" title="Switch to light mode"><span class="theme-icon" aria-hidden="true">☀</span><span class="theme-label">Light</span></button>
-          <button class="btn btn-ghost btn-small" id="quick-add" title="Add a paper">＋ Add paper</button>
-          <button class="avatar" id="account-btn" aria-label="Backup and settings">RL</button>
+          <button class="btn btn-ghost btn-small" id="quick-add" data-action="add-paper" title="Add a paper">＋ Add paper</button>
         </div>
       </header>
       <main class="main" id="main" tabindex="-1"></main>
