@@ -186,3 +186,16 @@ input[type=checkbox]{accent-color:#EB5E28}
 .sidebar .brand-logo{width:189px;max-width:100%;height:auto;object-fit:contain}
 .topbar .brand-logo-mobile{width:150px;max-width:100%;height:auto;object-fit:contain}
 @media(max-width:740px){.topbar .brand-logo-mobile{width:146px;max-height:54px}}
+
+/* New user-supplied RL Survey Lab book-and-network logo replaces Σ in sidebar. */
+.sidebar .brand{display:flex;align-items:center;gap:11px;padding:0 4px 30px;min-height:65px}
+.brand-book-icon{display:block;flex:0 0 42px;width:42px;height:42px;object-fit:contain}
+.brand-wordmark{display:flex;flex-direction:column;min-width:0}
+.brand-wordmark strong{display:block;color:#FFFCF2;font:800 13px/1.25 'DM Sans',sans-serif;letter-spacing:1.35px;white-space:nowrap}
+.brand-wordmark small{display:block;color:#CCC5B9;font:700 8px/1.35 'DM Sans',sans-serif;letter-spacing:1.22px;margin-top:4px;white-space:nowrap}
+@media(max-width:740px){
+ .topbar .mobile-brand{display:flex;align-items:center;gap:7px}
+ .topbar .brand-book-icon{width:32px;height:32px;flex-basis:32px}
+ .topbar .brand-wordmark strong{font-size:11px;letter-spacing:.75px}
+ .topbar .brand-wordmark small{font-size:6px;letter-spacing:.7px}
+}
