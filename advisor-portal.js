@@ -94,7 +94,8 @@ function renderPublishForm(){
  '<div class="portal-action-row"><button type="button" class="portal-button" data-action="preview">Preview shared information</button>'+
  '<button type="submit" class="portal-button portal-button-primary">Publish approved snapshot</button></div>'+
  '<div class="portal-field"><label>Preview (required before publishing)</label><pre id="publish-preview" class="portal-preview">Not previewed yet. Nothing will be shared automatically.</pre></div>'+
- '<p class="portal-muted">Last published: '+(latest?dateStr(latest.created_at):'Never')+'</p></form>';
+ '<p class="portal-muted">Last published: '+(latest?dateStr(latest.created_at):'Never')+'</p>'+
+ (latest?'<div class="portal-action-row"><button type="button" class="portal-button" data-action="revoke">Revoke shared progress</button></div>':'')+'</form>';
 }
 function renderPublished(){
  if(!latest||!latest.payload)return '<div class="portal-empty">Your researcher has not published a progress update yet.</div>';
@@ -258,7 +259,20 @@ root.addEventListener("submit",async event=>{
  }catch(e){msg("Action not completed: "+(e?.message||String(e)),true)}
  finally{setBusy(false)}
 });
-root.addEventListener("click",event=>{
+root.addEventListener("click",async event=>{
+ if(event.target.closest('[data-action="revoke"]')){
+  if(!client||!project||mode!=="owner"||loading)return;
+  if(!window.confirm("Revoke all previously published progress snapshots? New database reads by your PI will be blocked. This cannot remove screenshots or copies already saved."))return;
+  try{
+   setBusy(true);
+   const {error}=await client.rpc("revoke_project_snapshots",{p_project_id:project.id});
+   if(error)throw error;
+   msg("Previously published progress has been revoked.");
+   await fetchAll();
+  }catch(e){msg("Could not revoke shared progress: "+e.message,true)}
+  finally{setBusy(false)}
+  return;
+ }
  if(event.target.closest('[data-action="preview"]')){
   try{const f=document.getElementById("publish-form");if(!f?.reportValidity())return;previewShare(f)}
   catch(e){msg(e?.message||"Preview failed.",true)}
