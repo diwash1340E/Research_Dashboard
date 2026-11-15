@@ -6,12 +6,37 @@
   <meta name="theme-color" content="#252422" />
   <meta name="description" content="One distraction-free place for your reinforcement learning survey research, courses, papers, reading, and progress." />
   <title>RL Survey Lab — Research Command Center</title>
-  <link rel="icon" type="image/svg+xml" href="assets/neural_growth_book_icon_v3.png" type="image/png" />
-  <link rel="stylesheet" href="styles.css?v=book-icon-v3" />
-  <script src="app.js?v=logo-v2" defer></script>
+  <link rel="icon" type="image/png" href="assets/neural_growth_book_icon_v3.png" />
+  <link rel="stylesheet" href="styles.css?v=pi-collab-1" />
+  <link rel="stylesheet" href="advisor-portal.css" />
+  <style>
+    #app[hidden], #workspace-gate[hidden], #modal-root[hidden], #toast[hidden],
+    #workspace-login[hidden], #workspace-switch[hidden] { display: none !important; }
+    #workspace-gate { max-width: 760px; }
+  </style>
+  <script src="advisor-config.js" defer></script>
+  <script src="workspace-auth.js" type="module"></script>
 </head>
 <body>
-  <div id="app" class="shell">
+  <section id="workspace-gate" class="portal-shell" aria-labelledby="workspace-gate-title">
+    <nav class="portal-nav"><a class="brand-inline" href="index.html"><img src="assets/neural_growth_book_icon_v3.png" alt=""><span>RL SURVEY LAB</span></a>
+      <a class="portal-button" href="advisor.html">PI dashboard</a></nav>
+    <div class="portal-hero"><div class="portal-kicker">Private researcher workspace</div>
+      <h1 id="workspace-gate-title">Your research starts here.</h1>
+      <p>Sign in with your authorized researcher account to open your workspace.</p></div>
+    <section class="portal-card">
+      <h2>Researcher sign-in</h2>
+      <div id="workspace-status" class="portal-message" role="status" aria-live="polite">Checking your session…</div>
+      <form id="workspace-login" hidden>
+        <div class="portal-field"><label for="workspace-email">Invited email address</label><input id="workspace-email" name="email" type="email" autocomplete="username" maxlength="254" required></div>
+        <div class="portal-field"><label for="workspace-password">Password</label><input id="workspace-password" name="password" type="password" autocomplete="current-password" required></div>
+        <div class="portal-action-row"><button class="portal-button portal-button-primary" type="submit">Sign in to workspace</button><a class="portal-button" href="pi.html">Use an email login link</a></div>
+      </form>
+      <button id="workspace-switch" class="portal-button" type="button" hidden>Sign out / switch account</button>
+      <p class="portal-muted" style="margin-top:18px">Your saved progress and uploads remain in this browser. The login gate does not encrypt local browser storage.</p>
+    </section>
+  </section>
+  <div id="app" class="shell" hidden>
     <aside class="sidebar" aria-label="Main navigation">
       <a class="brand" href="#home" data-nav="home" aria-label="RL Survey Lab home">
         <img class="brand-book-icon" src="assets/neural_growth_book_icon_v3.png" alt="" width="42" height="42" />
@@ -30,6 +55,7 @@
       <nav class="nav">
         <button class="nav-link" data-nav="timer"><span class="nav-icon">◷</span> Focus & streaks</button>
         <button class="nav-link" data-nav="journal"><span class="nav-icon">✎</span> Research journal</button>
+        <a class="nav-link" href="pi.html"><span class="nav-icon">✉</span> Advisor collaboration</a>
         <button class="nav-link" data-nav="settings"><span class="nav-icon">⚙</span> Backup & settings</button>
       </nav>
       <div class="sidebar-bottom">
@@ -47,6 +73,8 @@
         <div class="top-actions">
           <span class="today-chip" id="today-chip"></span>
           <button class="btn btn-ghost btn-small" id="quick-add" data-action="add-paper" title="Add a paper">＋ Add paper</button>
+          <a class="btn btn-ghost btn-small advisor-shortcut" href="pi.html" aria-label="Advisor collaboration">PI</a>
+          <button class="btn btn-ghost btn-small" id="workspace-signout" type="button">Sign out</button>
         </div>
       </header>
       <main class="main" id="main" tabindex="-1"></main>
@@ -60,10 +88,11 @@
       <button data-nav="settings">⚙<span>More</span></button>
     </nav>
   </div>
-  <div id="modal-root"></div>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="modal-root" hidden></div>
+  <div id="toast" hidden class="toast" role="status" aria-live="polite"></div>
   <input type="file" id="doc-upload" accept=".pdf,.md,.txt,.doc,.docx,.csv,.json,.png,.jpg,.jpeg" multiple hidden />
   <input type="file" id="paper-upload" accept=".pdf" hidden />
   <input type="file" id="import-file" accept=".json" hidden />
+  <noscript><p class="portal-message">JavaScript is required to verify your researcher account.</p></noscript>
 </body>
 </html>

@@ -199,3 +199,9 @@ input[type=checkbox]{accent-color:#EB5E28}
  .topbar .brand-wordmark strong{font-size:11px;letter-spacing:.75px}
  .topbar .brand-wordmark small{font-size:6px;letter-spacing:.7px}
 }
+
+/* Advisor collaboration navigation: lives in the existing student workspace. */
+.sidebar .nav a.nav-link{display:flex;align-items:center;text-decoration:none}
+.sidebar .nav a.nav-link:hover{text-decoration:none}
+.advisor-shortcut{display:none}
+@media(max-width:740px){.advisor-shortcut{display:inline-flex}}
