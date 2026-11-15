@@ -142,7 +142,7 @@ revoke all on function public.revoke_project_snapshots(uuid) from public,anon;
 grant execute on function public.revoke_project_snapshots(uuid) to authenticated;
 
 -- Abort the transaction if these smoke checks fail.
-do $
+do $test$
 begin
   if not public.valid_progress_payload(
     '{"displayName":"Example","projectTitle":"RL Survey Lab","stage":{"number":1,"title":"Understand core RL","percent":25},"courses":[{"name":"Example course","completed":1,"total":10}],"papers":[{"title":"Example paper","year":2025,"url":"https://example.org/paper"}],"hoursWeek":2.5,"nextGoal":"Read a paper"}'::jsonb
@@ -156,7 +156,7 @@ begin
     or not has_column_privilege('authenticated','public.published_snapshots','payload','INSERT')
   then raise exception 'Unexpected client column permissions'; end if;
 end;
-$;
+$test$;
 
 commit;
 select 'PASS: Advisor database hardening applied' as result;
