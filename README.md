@@ -51,3 +51,12 @@ The site uses no paid API, no sign-in, and no user analytics. The OpenAlex publi
 ## License
 
 The application code in this deliverable is provided for your personal research use. The original user-owned PDF is bundled unchanged, and third-party courses remain linked to their respective sites rather than copied.
+## Upcoming advisor collaboration (feature branch only)
+
+The `feature/pi-advisor-dashboard` branch prototypes two authenticated pages:
+- `pi.html`: submit requests for PI review, receive approval/denial/revision feedback and recommendations, choose and publish visible progress.
+- `advisor.html`: advisor reviews progress, approves/denies/requests changes, and sends written notes/suggested readings.
+
+The new workflow is **disabled until Supabase is configured, invitations are issued, the RLS migration is deployed and security tests pass**. No data from local research storage is automatically synchronized. There are no new cloud accounts or messages on the live GitHub Pages deployment yet.
+
+See `docs/PI_ADVISOR_DASHBOARD_PLAN.md` for installation and test requirements.
