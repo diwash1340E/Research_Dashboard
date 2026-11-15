@@ -1,4 +1,4 @@
-/* RL Survey Lab — owner-only workspace entry; local data is not migrated or uploaded. */
+/* Bellman Track — owner-only workspace entry; local data is not migrated or uploaded. */
 "use strict";
 const gate=document.getElementById("workspace-gate");
 const app=document.getElementById("app");

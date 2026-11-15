@@ -1,4 +1,4 @@
-/* RL Survey Lab — advisor collaboration prototype.
+/* Bellman Track — advisor collaboration prototype.
    Runs only when Supabase is configured. Never sends the legacy state automatically. */
 "use strict";
 
@@ -132,7 +132,7 @@ function renderAdvisor(){
 }
 function getLocalState(){
  let raw;try{raw=JSON.parse(localStorage.getItem("rl_survey_lab_v1")||"null")}catch{throw new Error("Local research progress could not be read. No data was shared.")}
- if(!raw||raw.schema!==1)throw new Error("No compatible RL Survey Lab progress found in this browser.");
+ if(!raw||raw.schema!==1)throw new Error("No compatible Bellman Track progress found in this browser.");
  return raw;
 }
 function buildAllowlistedSnapshot(form){

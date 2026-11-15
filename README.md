@@ -1,4 +1,4 @@
-# RL Survey Lab — Research Command Center
+# Bellman Track — Research Command Center
 
 A free, local-first research dashboard for planning and writing a credible reinforcement learning survey.
 
