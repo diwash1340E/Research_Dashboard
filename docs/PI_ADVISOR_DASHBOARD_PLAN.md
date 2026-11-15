@@ -110,3 +110,58 @@ PI portal:
 - PI cannot alter underlying data, and revocation prevents fresh reads.
 - Shared view updates only after explicit publish; no private journal/PDF/backup leaks.
 - Works on phone and desktop; documentation includes backup, recovery and security notes.
+
+## Advisor note / approval workflow (implemented as a development-branch scaffold)
+
+New pages:
+- `pi.html` — researcher creates a review/approval request, reads advisor decisions and notes, selectively publishes progress, and may revoke published snapshots.
+- `advisor.html` — authenticated PI sees approved progress, submits recommendations, and responds to pending requests with Approve, Deny, or Request changes.
+- `advisor-portal.js` — shared client controller. It deliberately **reads** `rl_survey_lab_v1` but does not change or reformat it.
+- `advisor-portal.css` — responsive layout matching the charcoal/orange identity.
+- `advisor-config.js` — initially blank, intentionally disables remote workflows until configured.
+- `supabase/migrations/20261114_advisor_collaboration.sql` — owner/member tables, request/note/snapshot tables, RLS, advisor decision and owner revocation functions.
+
+New request categories: research topic approval, paper recommendation, milestone sign-off, meeting, other.
+New request states: pending, approved, denied, changes_requested.
+PI feedback is required for **every** decision, including Approve. Decisions are one-time; a researcher can submit a new follow-up request to address requested changes.
+PI-authored freeform notes: recommendation, general note, reading suggestion, meeting follow-up.
+
+### Configuration — required before use
+
+1. Create a dedicated Supabase project and review usage/pricing. This development plan cannot create that project for the user.
+2. Run the SQL migration against that project with appropriate authorized database credentials.
+3. Configure Supabase Auth to restrict account creation and invite only the researcher and PI; disable uninvited signup.
+4. Add both exact redirect URLs in Supabase Auth:
+   - `https://diwash1340e.github.io/Research_Dashboard/pi.html`
+   - `https://diwash1340e.github.io/Research_Dashboard/advisor.html`
+5. In a trusted database administration interface, obtain the **existing invited Auth users' UUIDs** and provision one project and one active advisor membership. Never do this from the public browser.
+6. Run the access-control tests below and fix any failed policies BEFORE deployment. Do not use a real student's private data during testing.
+7. Populate `advisor-config.js` with only `supabaseUrl` and the browser-safe `supabasePublishableKey`. **Never commit a secret/service-role key.**
+8. Test magic-link sign-in, permissions, request→decision cycle, notes, snapshot preview, revocation, error recovery and mobile UI in staging.
+9. Require explicit approval to merge and publish the implementation on `main`.
+
+### Mandatory security test matrix (not yet executed)
+
+| Caller | Read project | Create request | See requests | Write PI note | Approve/deny request | Publish progress | Revoke |
+|---|---|---|---|---|---|---|---|
+| Owner | Own only | Own only | Own only | Denied | Denied | Own only | Own only |
+| Active assigned PI | Assigned only | Denied | Assigned only | Assigned only | Assigned only | Denied | Denied |
+| Signed-in unrelated user | Denied | Denied | Denied | Denied | Denied | Denied | Denied |
+| Signed-out/anon | Denied | Denied | Denied | Denied | Denied | Denied | Denied |
+| Former PI (revoked membership) | Denied | Denied | Denied | Denied | Denied | Denied | Denied |
+
+Additional checks:
+- A request can be decided only when pending; rejected or repeated responses must fail.
+- Feedback shorter than 3 characters or longer than 4000 must fail.
+- Client attempts to insert requests directly with `status='approved'` must fail.
+- Direct table UPDATE and DELETE must fail for both users.
+- Revoking published snapshots prevents future SELECT; preexisting screenshots/local copies cannot be erased.
+- A different signed-in user cannot access the same data through REST endpoints, even after manually changing browser UI.
+- No `rl_survey_lab_v1`, private journal/PDF/notes, raw `sessions`, or backup JSON is transmitted.
+- Legacy backup/export still produces the same shape, and previous progress is preserved after switching pages.
+- After login expiry, previously fetched sensitive views must not remain visible to unauthorized sessions; test signout, token expiry, and refresh behavior.
+- Test browser back/forward, lost network, invalid invited email, and hostile HTML strings in note/request text.
+
+### Deployment status
+
+**Not deployed:** A GitHub commit only verifies source code was recorded. Supabase has not been configured, the SQL has not been applied, end-to-end authentication has not been tested, and no real PI messages can be sent yet. `main` intentionally remains unchanged.
