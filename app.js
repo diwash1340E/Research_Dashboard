@@ -1,5 +1,31 @@
 /* RL Survey Lab — standalone, local-first research workspace. No credentials or analytics. */
 'use strict';
+
+// Theme preference is intentionally independent of study progress and backups.
+const THEME_KEY = 'rl_survey_lab_theme_v1';
+function applyTheme(value) {
+ const mode = value === 'light' ? 'light' : 'dark';
+ document.documentElement.dataset.theme = mode;
+ document.documentElement.style.colorScheme = mode;
+ const themeMeta = document.querySelector('meta[name="theme-color"]');
+ if (themeMeta) themeMeta.content = mode === 'light' ? '#f7f9fc' : '#0b1020';
+ const button = document.getElementById('theme-toggle');
+ if (!button) return;
+ const toLight = mode === 'dark';
+ button.setAttribute('aria-label', toLight ? 'Switch to light mode' : 'Switch to dark mode');
+ button.setAttribute('title', toLight ? 'Switch to light mode' : 'Switch to dark mode');
+ button.setAttribute('aria-pressed', String(toLight));
+ button.querySelector('.theme-icon').textContent = toLight ? '☀' : '☾';
+ button.querySelector('.theme-label').textContent = toLight ? 'Light' : 'Dark';
+}
+function toggleTheme() {
+ const newMode = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+ try { localStorage.setItem(THEME_KEY, newMode); } catch (_) {}
+ applyTheme(newMode);
+}
+document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+applyTheme(document.documentElement.dataset.theme);
+
 const STATE_KEY='rl_survey_lab_v1';
 const DB_NAME='rl_survey_lab_uploads_v1';
 const FILE_STORE='files';
