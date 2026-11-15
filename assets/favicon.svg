@@ -1,1 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="17" fill="#131b33"/><path d="M40 15H22L34 32 22 49h18" fill="none" stroke="#9ddfca" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="46" cy="15" r="4" fill="#dfb776"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="RL Survey Lab">
+<rect width="64" height="64" rx="14" fill="#252422"/>
+<rect x="5" y="5" width="54" height="54" rx="11" fill="#403D39" stroke="#EB5E28" stroke-width="1.5" stroke-opacity=".65"/>
+<path d="M46 16H21l14 16-14 16h25" fill="none" stroke="#EB5E28" stroke-width="7" stroke-linejoin="miter" stroke-linecap="square"/>
+</svg>

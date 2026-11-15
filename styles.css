@@ -181,3 +181,8 @@ input[type=checkbox]{accent-color:#EB5E28}
 .brand-logo{display:block;width:189px;max-width:100%;height:auto;object-fit:contain;flex-shrink:1}
 .mobile-brand .brand-logo-mobile{width:150px;height:auto;max-width:100%}
 @media(max-width:740px){.mobile-brand{display:flex;align-items:center}.brand-logo-mobile{max-height:52px}}
+
+/* The supplied RL Survey Lab wordmark is the primary brand on desktop/mobile. */
+.sidebar .brand-logo{width:189px;max-width:100%;height:auto;object-fit:contain}
+.topbar .brand-logo-mobile{width:150px;max-width:100%;height:auto;object-fit:contain}
+@media(max-width:740px){.topbar .brand-logo-mobile{width:146px;max-height:54px}}
