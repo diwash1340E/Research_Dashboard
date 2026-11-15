@@ -52,6 +52,7 @@ create table if not exists public.published_snapshots (
   project_id uuid not null references public.projects(id) on delete cascade,
   published_by uuid not null references auth.users(id),
   payload jsonb not null,
+  revoked_at timestamptz,
   created_at timestamptz not null default now(),
   check (jsonb_typeof(payload)='object'),
   check (pg_column_size(payload)<=60000),
@@ -116,7 +117,7 @@ for insert to authenticated with check (
 
 create policy "owner and advisor read published progress" on public.published_snapshots
 for select to authenticated using (
-  exists(select 1 from public.projects p where p.id=project_id and
+  revoked_at is null and exists(select 1 from public.projects p where p.id=project_id and
     (p.owner_user_id=(select auth.uid()) or exists(
       select 1 from public.project_members m where m.project_id=p.id and m.user_id=(select auth.uid()) and m.role='advisor' and m.active
     )))
@@ -162,6 +163,33 @@ $$;
 
 revoke all on function public.respond_to_advisor_request(uuid,text,text) from public,anon;
 grant execute on function public.respond_to_advisor_request(uuid,text,text) to authenticated;
+
+-- The researcher can revoke future database reads of ALL their published snapshots.
+-- Revocation cannot take back screenshots, copies or an already loaded tab.
+create or replace function public.revoke_project_snapshots(p_project_id uuid)
+returns integer
+language plpgsql
+security definer
+set search_path = ''
+as $
+declare changed_count integer;
+begin
+ if (select auth.uid()) is null then
+  raise exception 'Authentication required' using errcode='42501';
+ end if;
+ if not exists(select 1 from public.projects p where p.id=p_project_id
+               and p.owner_user_id=(select auth.uid())) then
+  raise exception 'You cannot revoke this project' using errcode='42501';
+ end if;
+ update public.published_snapshots s
+ set revoked_at=now()
+ where s.project_id=p_project_id and s.revoked_at is null;
+ get diagnostics changed_count = row_count;
+ return changed_count;
+end;
+$;
+revoke all on function public.revoke_project_snapshots(uuid) from public,anon;
+grant execute on function public.revoke_project_snapshots(uuid) to authenticated;
 
 -- The admin must invite identities and provision the project and roles manually:
 -- INSERT INTO public.projects(owner_user_id,title) VALUES ('<owner-auth-user-id>','RL Literature Survey') RETURNING id;
