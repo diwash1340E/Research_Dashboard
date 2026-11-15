@@ -1,31 +1,6 @@
 /* RL Survey Lab — standalone, local-first research workspace. No credentials or analytics. */
 'use strict';
 
-// Theme preference is intentionally independent of study progress and backups.
-const THEME_KEY = 'rl_survey_lab_theme_v1';
-function applyTheme(value) {
- const mode = value === 'light' ? 'light' : 'dark';
- document.documentElement.dataset.theme = mode;
- document.documentElement.style.colorScheme = mode;
- const themeMeta = document.querySelector('meta[name="theme-color"]');
- if (themeMeta) themeMeta.content = mode === 'light' ? '#f7f9fc' : '#0b1020';
- const button = document.getElementById('theme-toggle');
- if (!button) return;
- const toLight = mode === 'dark';
- button.setAttribute('aria-label', toLight ? 'Switch to light mode' : 'Switch to dark mode');
- button.setAttribute('title', toLight ? 'Switch to light mode' : 'Switch to dark mode');
- button.setAttribute('aria-pressed', String(toLight));
- button.querySelector('.theme-icon').textContent = toLight ? '☀' : '☾';
- button.querySelector('.theme-label').textContent = toLight ? 'Light' : 'Dark';
-}
-function toggleTheme() {
- const newMode = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
- try { localStorage.setItem(THEME_KEY, newMode); } catch (_) {}
- applyTheme(newMode);
-}
-document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-applyTheme(document.documentElement.dataset.theme);
-
 const STATE_KEY='rl_survey_lab_v1';
 const DB_NAME='rl_survey_lab_uploads_v1';
 const FILE_STORE='files';
@@ -136,13 +111,13 @@ function render(){
  const pages={home:renderHome,courses:renderCourses,roadmap:renderRoadmap,papers:renderPapers,documents:renderDocs,feed:renderFeed,timer:renderTimer,journal:renderJournal,settings:renderSettings};
  main().innerHTML=(pages[ui.page]||renderHome)();
  if(ui.page==='timer')paintTimer();
- if((ui.page==='feed'||ui.page==='home')&&ui.feedStatus==='idle')loadFeed();
+ if(ui.page==='feed'&&ui.feedStatus==='idle')loadFeed();
 }
 function renderHome(){
  const s=stage();const dateHash=hash(day());const affirmative=dailyAffirmations[dateHash%dailyAffirmations.length];
  const latest=[...state.papers].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).slice(0,3);
  return `<div class="eyebrow">${escaped(new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'}).toUpperCase())} · THE JOURNEY CONTINUES</div>
- <section class="hero"><div class="hero-main"><div class="overline">YOUR PERSONAL RESEARCH COMMAND CENTER</div><h1>From curiosity to a <em>credible RL survey.</em></h1><p>One place to learn the foundations, explore the literature, question assumptions, and turn research into a publishable review.</p><div class="hero-actions"><button class="btn btn-primary" data-nav="roadmap">Continue Stage ${state.currentStage} <span>↗</span></button><button class="btn btn-secondary" data-nav="timer">◷ Start a focus session</button></div></div><div class="hero-quote"><span class="overline">✦ A THOUGHT FOR TODAY</span><blockquote>“${escaped(quotes[ui.quoteIndex])}”</blockquote><div class="quote-bottom"><span>Research reminder</span><button class="quote-next" data-action="shuffle-quote" aria-label="New quote">↻ New quote</button></div></div></section>
+ <section class="hero"><div class="hero-main"><div class="overline">YOUR PERSONAL RESEARCH COMMAND CENTER</div><h1>From curiosity to a <em>credible RL survey.</em></h1><p>One place to learn the foundations, explore the literature, question assumptions, and turn research into a publishable review.</p><div class="hero-actions"><button class="btn btn-primary" data-nav="roadmap">Continue Stage ${state.currentStage} <span>↗</span></button><button class="btn btn-secondary" data-nav="timer">◷ Start a focus session</button></div></div></section>
  <section class="stats-grid">
  ${statCard('TOTAL FOCUSED',hoursString(totalMinutes()/60),'hrs','◷','All logged work')}
  ${statCard('CURRENT STREAK',streak(),'days','🔥','15 min/day to keep it')}
@@ -151,15 +126,15 @@ function renderHome(){
  </section>
  <div class="dashboard-grid"><div class="stack">
  <section class="card"><div class="section-head"><div><div class="overline">YOUR NEXT MILESTONE</div><h2 style="margin-top:6px">Stage ${s.id}: ${escaped(s.title)}</h2><p>${escaped(s.description)}</p></div><span class="pill">${stageProgress(s.id)}% ready</span></div>
- ${progressBar(stageProgress(s.id))}<div class="stage-checks">${s.tasks.map((t,i)=>`<label class="task-row ${taskDone(s.id,i)?'done':''}"><input type="checkbox" data-stage-task="${s.id}" data-task-index="${i}" ${taskDone(s.id,i)?'checked':''}/><span>${escaped(t)}</span></label>`).join('')}</div>
- <div class="note-box"><strong>Next action →</strong> ${escaped(state.nextAction)}</div><div class="right-actions spacing-top"><button class="btn btn-ghost btn-small" data-nav="roadmap">View all 7 stages →</button></div></section>
- <section class="card"><div class="section-head"><div><h2>Research paper library</h2><p>What you are reading, considering, and including.</p></div><button class="btn btn-ghost btn-small" data-nav="papers">See all →</button></div>${latest.length?latest.map(activePaperSnippet).join(''):empty('▣','No papers added yet','Start by adding one survey, even if you have not read it.',`<button class="btn btn-primary btn-small" data-action="add-paper">＋ Add your first paper</button>`)}</section>
+ ${progressBar(stageProgress(s.id))}<div class="spacing-top"></div>
+ <div class="note-box"><strong>Next action →</strong> ${escaped(state.nextAction)}</div><div class="right-actions spacing-top"><button class="btn btn-ghost btn-small" data-nav="roadmap">Open stage checklist →</button></div></section>
+ <section class="card"><div class="section-head"><div><h2>Research paper library</h2><p>What you are reading, considering, and including.</p></div><button class="btn btn-ghost btn-small" data-nav="papers">See all →</button></div>${latest.length?latest.slice(0,2).map(activePaperSnippet).join(''):empty('▣','No papers added yet','Start by adding one survey, even if you have not read it.',`<button class="btn btn-primary btn-small" data-action="add-paper">＋ Add your first paper</button>`)}</section>
  </div><div class="stack">
  <section class="card"><div class="section-head"><div><h2>Today's focus</h2><p>Consistency compounds.</p></div><span style="font-size:23px">🔥</span></div><div class="split" style="margin:9px 0 13px"><span style="font:700 25px 'Space Grotesk',sans-serif">${hoursString(minutesOn(day())/60)} <small class="muted" style="font-size:12px">/ ${hoursString(state.dailyGoal/60)} hrs</small></span><span class="pill grey">${percentDaily()}%</span></div>${progressBar(percentDaily())}<div class="split spacing-top"><span class="small muted">${streak()}-day study streak</span><button class="btn btn-ghost btn-small" data-nav="timer">Log time →</button></div></section>
- <section class="card"><div class="section-head"><div><h2>My courses</h2><p>Learn + research in parallel</p></div><button class="btn btn-ghost btn-small" data-nav="courses">View all →</button></div>${courses.slice(0,3).map(c=>`<div class="course-row"><div class="course-symbol">${c.symbol}</div><div class="course-content"><strong>${escaped(c.name)}</strong><small>${courseDone(c.id)} / ${c.units} lessons</small><div class="microbar"><span style="width:${coursePercent(c)}%"></span></div></div><span class="percent">${coursePercent(c)}%</span></div>`).join('')}</section>
- <section class="card"><div class="section-head"><div><h2>Research radar</h2><p>Current research—not distracting headlines</p></div><span style="font-size:21px;color:var(--mint)">⌁</span></div><p class="small muted" style="margin-bottom:13px">Latest RL research publications only. Add promising papers to your reading queue.</p><div class="home-research-items">${((ui.feedItems.length?ui.feedItems:(state.feedCache[state.feedArea]?.items||[]))).slice(0,3).map(p=>`<div class="home-research-entry"><a href="${safeUrl(p.url)}" target="_blank" rel="noopener noreferrer">${escaped(p.title)}</a><small>${fmtDate(p.date)} · research paper</small></div>`).join('')||(ui.feedStatus==='loading'?'<div class="small muted">Looking for recent RL papers…</div>':'<div class="small muted">Live preview unavailable. Open the feed for trusted research sources.</div>')}</div><button class="btn btn-secondary btn-small spacing-top" data-nav="feed">View research feed ↗</button></section>
+ <section class="card"><div class="section-head"><div><h2>My courses</h2><p>Learn + research in parallel</p></div><button class="btn btn-ghost btn-small" data-nav="courses">View all →</button></div>${courses.slice(0,2).map(c=>`<div class="course-row"><div class="course-symbol">${c.symbol}</div><div class="course-content"><strong>${escaped(c.name)}</strong><small>${courseDone(c.id)} / ${c.units} lessons</small><div class="microbar"><span style="width:${coursePercent(c)}%"></span></div></div><span class="percent">${coursePercent(c)}%</span></div>`).join('')}</section>
+ 
  </div></div>
- <div class="quote-strip"><span>✦ <strong>Today's affirmation:</strong> ${escaped(affirmative)}</span><button class="btn btn-ghost btn-small" data-nav="journal">Capture an insight →</button></div>`
+ `
 }
 function statCard(label,value,unit,icon,caption){return `<div class="card stat-card"><div class="stat-top"><span>${label}</span><span class="stat-icon">${icon}</span></div><div class="stat-value">${value}<small>${unit}</small></div><div class="stat-caption">${caption}</div></div>`}
 function renderCourses(){return pageHeader('The learning track','Four free options, one objective: understanding concepts well enough to evaluate research.')+`<div class="inline-message spacing-bottom"><span>✦</span><span><strong>Start with David Silver for foundations</strong>, move into selected Berkeley lectures, and use Hugging Face when practical implementation helps. Stanford CS234 is an alternative, not required extra homework.</span></div><div class="resources-grid">${courses.map(c=>`<article class="card resource-card"><div class="resource-head"><div class="resource-icon ${c.tone}">${escaped(c.symbol)}</div><div><h3>${escaped(c.name)}</h3><div class="byline">${escaped(c.provider)}</div></div></div><p class="resource-desc">${escaped(c.detail)}</p><div class="resource-metrics"><span class="metric-tag">${c.units} lessons / units</span><span class="metric-tag">${escaped(c.estimate)}</span><span class="metric-tag">Free</span></div><div class="progress-line"><span>Learning progress</span><strong>${courseDone(c.id)} / ${c.units} (${coursePercent(c)}%)</strong></div>${progressBar(coursePercent(c))}<div class="resource-actions"><button class="btn btn-primary btn-small" data-action="open-course" data-id="${c.id}">Track lessons</button><a class="btn btn-ghost btn-small" href="${c.link}" target="_blank" rel="noopener noreferrer">Open course ↗</a></div></article>`).join('')}</div><section class="card spacing-top"><div class="section-head"><h2>Two useful references</h2></div><div class="roadmap-grid"><div class="action-card"><span class="action-number">01</span><div><strong>Sutton & Barto — Reinforcement Learning: An Introduction</strong><p>Free author-hosted textbook. Use it as your theory reference, not a prerequisite to finish first.</p><a class="tiny" href="http://incompleteideas.net/book/the-book-2nd.html" target="_blank" rel="noopener">Read free ↗</a></div></div><div class="action-card"><span class="action-number">02</span><div><strong>Texas Tech Udemy Business</strong><p>Sign in with your TTU credentials and search Deep Reinforcement Learning, DQN, and PPO. Catalog inclusion varies.</p><a class="tiny" href="https://ttu.udemy.com/" target="_blank" rel="noopener">Open TTU Udemy ↗</a></div></div></div></section><section class="card spacing-top"><h2>How to study without delaying the review</h2><div class="list-panel spacing-top">${['Watch a lecture and explain one central concept without notes.','Read a related survey or original paper; see how the concept is used.','Write what the paper assumes, establishes, and leaves uncertain.','End each week with a short synthesis and the next concrete question.'].map((x,i)=>`<div class="action-card"><span class="action-number">0${i+1}</span><div><p style="font-size:12px;color:#c6d8df">${escaped(x)}</p></div></div>`).join('')}</div></section>`}
