@@ -34,9 +34,11 @@ function renderSetup(){
 function renderLogin(){
  document.getElementById("signout-button").hidden=true;
  root.innerHTML='<div class="portal-grid"><section class="portal-card"><h2>Sign in with your invited email</h2>'+
- '<p class="portal-muted">Only invited researcher and PI accounts can access their assigned projects. A login link is sent by email.</p>'+
- '<form id="login-form"><div class="portal-field"><label for="email">Invited email address</label><input id="email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="Your invited email"></div>'+
- '<div class="portal-action-row"><button class="portal-button portal-button-primary" type="submit">Send secure login link</button></div></form>'+pageNotice()+'</section>'+
+ '<p class="portal-muted">Only invited researcher and PI accounts can access their assigned projects. Sign in with your password or request a secure email link.</p>'+
+ '<form id="login-form"><div class="portal-field"><label for="email">Invited email address</label><input id="email" name="email" type="email" autocomplete="username" required maxlength="254" placeholder="Your invited email"></div>'+
+ '<div class="portal-field"><label for="password">Password (for password sign-in)</label><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Your account password"></div>'+
+ '<div class="portal-action-row"><button class="portal-button portal-button-primary" type="submit" data-method="password">Sign in with password</button>'+
+ '<button class="portal-button" type="submit" data-method="magic-link">Send secure login link</button></div></form>'+pageNotice()+'</section>'+
  '<section class="portal-card"><h2>What stays private?</h2><p class="portal-muted">Your personal journal, private notes, uploaded files, full research backups and raw time logs remain in your browser. Approved progress is shared only when you publish it.</p></section></div>';
 }
 function renderEmptyAccess(){
@@ -204,6 +206,12 @@ async function signIn(email){
  if(error)throw error;
  msg("If this address belongs to an invited account, check your email for a secure sign-in link.");
 }
+async function signInWithPassword(email,password){
+ if(!password)throw new Error("Enter your account password, or choose Send secure login link.");
+ const {error}=await client.auth.signInWithPassword({email,password});
+ if(error)throw error;
+ msg("Signed in. Loading your authorized project…");
+}
 async function insertRequest(form){
  const fields=new FormData(form);
  const data={project_id:project.id,submitted_by:user.id,request_type:String(fields.get("request_type")),title:short(fields.get("title"),180),details:short(fields.get("details"),4000)};
@@ -251,7 +259,16 @@ root.addEventListener("submit",async event=>{
  if(!form.reportValidity())return;
  try{
   setBusy(true);notice="";isError=false;
-  if(form.id==="login-form")await signIn(String(new FormData(form).get("email")).trim());
+  if(form.id==="login-form"){
+   const fields=new FormData(form),email=String(fields.get("email")).trim();
+   if(event.submitter?.dataset.method==="magic-link"){
+    form.elements.password.value="";
+    await signIn(email);
+   }else{
+    try{await signInWithPassword(email,String(fields.get("password")||""))}
+    finally{form.elements.password.value=""}
+   }
+  }
   if(form.id==="request-form")await insertRequest(form);
   if(form.id==="note-form")await insertNote(form);
   if(form.classList.contains("decision-form"))await decide(form);
